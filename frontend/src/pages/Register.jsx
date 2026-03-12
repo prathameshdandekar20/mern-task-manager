@@ -7,6 +7,7 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
@@ -16,13 +17,16 @@ const Register = () => {
             return;
         }
         setError('');
+        setIsLoading(true);
 
         try {
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
             await axios.post(`${apiUrl}/auth/register`, { email, password });
             navigate('/login');
         } catch (err) {
-            setError(err.response?.data?.message || 'Registration failed');
+            setError(err.response?.data?.message || 'Registration failed - Check Console and wait for Render to wake up');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -54,9 +58,9 @@ const Register = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="btn btn-primary">
+                    <button type="submit" className="btn btn-primary" disabled={isLoading}>
                         <UserPlus size={20} />
-                        Register
+                        {isLoading ? 'Creating Account...' : 'Register'}
                     </button>
                     <Link to="/login" className="auth-link">
                         Already have an account? Login here

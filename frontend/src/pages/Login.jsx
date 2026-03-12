@@ -7,6 +7,7 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -16,6 +17,7 @@ const Login = () => {
             return;
         }
         setError('');
+        setIsLoading(true);
 
         try {
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -23,7 +25,9 @@ const Login = () => {
             localStorage.setItem('token', res.data.token);
             navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
+            setError(err.response?.data?.message || 'Login failed - Check Console and wait for Render to wake up');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -55,9 +59,9 @@ const Login = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="btn btn-primary">
+                    <button type="submit" className="btn btn-primary" disabled={isLoading}>
                         <LogIn size={20} />
-                        Login
+                        {isLoading ? 'Connecting...' : 'Login'}
                     </button>
                     <Link to="/register" className="auth-link">
                         Don't have an account? Register here
